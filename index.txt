@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wikipedia Image Gallery</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --text-color: #333;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: #f9f9f9;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 30px 0;
+            text-align: center;
+            box-shadow: var(--box-shadow);
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        nav {
+            background-color: white;
+            padding: 15px 0;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 30px;
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .menu {
+            display: flex;
+            list-style: none;
+        }
+        
+        .menu li {
+            margin-left: 25px;
+        }
+        
+        .menu a {
+            text-decoration: none;
+            color: var(--dark-color);
+            font-weight: 500;
+            transition: color 0.3s;
+            padding: 5px 10px;
+            border-radius: var(--border-radius);
+        }
+        
+        .menu a:hover {
+            color: var(--secondary-color);
+            background-color: var(--light-color);
+        }
+        
+        .search-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin: 0 auto 30px;
+            max-width: 1200px;
+        }
+        
+        .search-form {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+        }
+        
+        .search-button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        
+        .search-button:hover {
+            background-color: #2980b9;
+        }
+        
+        .gallery-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .gallery-stats {
+            background-color: white;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            box-shadow: var(--box-shadow);
+            text-align: center;
+        }
+        
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .image-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+        
+        .image-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .image-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .image-info {
+            padding: 15px;
+        }
+        
+        .image-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--primary-color);
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .image-description {
+            font-size: 0.8rem;
+            color: #666;
+            line-height: 1.4;
+        }
+        
+        .load-more {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .load-more-button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        
+        .load-more-button:hover {
+            background-color: #2980b9;
+        }
+        
+        .load-more-button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        
+        .image-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+        }
+        
+        .modal-content img {
+            max-width: 100%;
+            max-height: 80vh;
+            border-radius: 8px;
+        }
+        
+        .modal-info {
+            color: white;
+            text-align: center;
+            margin-top: 15px;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2rem;
+            color: #666;
+        }
+        
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--secondary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 2s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        footer {
+            background-color: var(--dark-color);
+            color: white;
+            text-align: center;
+            padding: 25px 0;
+            margin-top: 50px;
+        }
+        
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 15px;
+            }
+            
+            .nav-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .menu {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .menu li {
+                margin: 5px 10px;
+            }
+            
+            .search-form {
+                flex-direction: column;
+            }
+            
+            .search-input, .search-button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Wikipedia Image Gallery</h1>
+        <p>Jelajahi 100+ gambar dari Wikipedia - 2025 Edition</p>
+    </header>
+    
+    <nav>
+        <div class="nav-container">
+            <div class="logo">WikiGallery</div>
+            <ul class="menu">
+                <li><a href="#" onclick="loadImages('nature')">Alam</a></li>
+                <li><a href="#" onclick="loadImages('technology')">Teknologi</a></li>
+                <li><a href="#" onclick="loadImages('history')">Sejarah</a></li>
+                <li><a href="#" onclick="loadImages('art')">Seni</a></li>
+                <li><a href="#" onclick="loadImages('science')">Sains</a></li>
+                <li><a href="#" onclick="showAbout()">Tentang</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <div class="search-container">
+        <div class="search-form">
+            <input type="text" id="searchInput" class="search-input" 
+                   placeholder="Cari gambar (contoh: mountain, computer, painting...)">
+            <button type="button" class="search-button" onclick="searchImages()">Cari Gambar</button>
+        </div>
+    </div>
+    
+    <div class="gallery-container">
+        <div class="gallery-stats" id="galleryStats">
+            <span id="imageCount">0</span> gambar ditemukan untuk <strong id="currentSearch">Wikipedia Featured</strong>
+        </div>
+        
+        <div class="gallery-grid" id="imageGallery">
+            <!-- Gambar akan dimuat di sini -->
+        </div>
+        
+        <div class="load-more">
+            <button class="load-more-button" id="loadMoreButton" onclick="loadMoreImages()" style="display: none;">
+                Muat Lebih Banyak
+            </button>
+        </div>
+    </div>
+    
+    <!-- Modal untuk gambar besar -->
+    <div class="image-modal" id="imageModal">
+        <button class="close-modal" onclick="closeModal()">&times;</button>
+        <div class="modal-content">
+            <img id="modalImage" src="" alt="">
+            <div class="modal-info">
+                <h3 id="modalTitle"></h3>
+                <p id="modalDescription"></p>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 Wikipedia Image Gallery. Semua hak dilindungi undang-undang.</p>
+            <p>Gambar dari Wikimedia Commons</p>
+        </div>
+    </footer>
+
+    <script>
+        let currentPage = 1;
+        let currentSearch = 'featured';
+        let isLoading = false;
+        let hasMore = true;
+
+        // Kategori gambar yang menarik
+        const categories = {
+            'featured': ['landscape', 'wildlife', 'architecture', 'art', 'technology'],
+            'nature': ['mountain', 'forest', 'ocean', 'animal', 'flower', 'sunset'],
+            'technology': ['computer', 'robot', 'smartphone', 'AI', 'space', 'innovation'],
+            'history': ['ancient', 'pyramid', 'castle', 'monument', 'artifact'],
+            'art': ['painting', 'sculpture', 'museum', 'artist', 'renaissance'],
+            'science': ['microscope', 'laboratory', 'astronomy', 'biology', 'chemistry']
+        };
+
+        // Load gambar saat halaman dibuka
+        document.addEventListener('DOMContentLoaded', function() {
+            loadImages('featured');
+            
+            // Enter key untuk search
+            document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchImages();
+                }
+            });
+        });
+
+        // Fungsi search gambar
+        function searchImages() {
+            const query = document.getElementById('searchInput').value.trim();
+            if (query) {
+                currentSearch = query;
+                currentPage = 1;
+                document.getElementById('imageGallery').innerHTML = '';
+                loadImages(query);
+            }
+        }
+
+        // Fungsi load gambar berdasarkan kategori/query
+        async function loadImages(category) {
+            if (isLoading) return;
+            
+            isLoading = true;
+            currentSearch = category;
+            currentPage = 1;
+            
+            document.getElementById('imageGallery').innerHTML = `
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>Memuat gambar...</p>
+                </div>
+            `;
+            
+            document.getElementById('loadMoreButton').style.display = 'none';
+
+            try {
+                const images = await fetchWikipediaImages(category, 1);
+                displayImages(images);
+                updateStats(images.length, category);
+            } catch (error) {
+                document.getElementById('imageGallery').innerHTML = `
+                    <div class="loading">
+                        <p>❌ Error memuat gambar: ${error.message}</p>
+                        <p>Coba kata kunci lain atau refresh halaman.</p>
+                    </div>
+                `;
+            }
+            
+            isLoading = false;
+        }
+
+        // Fungsi load lebih banyak gambar
+        async function loadMoreImages() {
+            if (isLoading || !hasMore) return;
+            
+            isLoading = true;
+            document.getElementById('loadMoreButton').disabled = true;
+            document.getElementById('loadMoreButton').textContent = 'Memuat...';
+
+            try {
+                const images = await fetchWikipediaImages(currentSearch, currentPage);
+                if (images.length > 0) {
+                    displayImages(images, true);
+                    currentPage++;
+                } else {
+                    hasMore = false;
+                    document.getElementById('loadMoreButton').style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error loading more images:', error);
+            }
+            
+            document.getElementById('loadMoreButton').disabled = false;
+            document.getElementById('loadMoreButton').textContent = 'Muat Lebih Banyak';
+            isLoading = false;
+        }
+
+        // Fetch gambar dari Wikipedia API
+        async function fetchWikipediaImages(query, page = 1) {
+            const limit = 20; // 20 gambar per request
+            const offset = (page - 1) * limit;
+            
+            // Jika query adalah kategori, pilih random keyword dari kategori
+            let searchQuery = query;
+            if (categories[query]) {
+                const randomIndex = Math.floor(Math.random() * categories[query].length);
+                searchQuery = categories[query][randomIndex];
+            }
+
+            try {
+                // Wikipedia API untuk search images
+                const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(searchQuery)}&gsrnamespace=6&gsrlimit=${limit}&prop=imageinfo&iiprop=url|extmetadata&iiurlwidth=300&format=json&origin=*`;
+                
+                const response = await fetch(searchUrl);
+                const data = await response.json();
+                
+                if (!data.query) {
+                    return [];
+                }
+                
+                const pages = data.query.pages;
+                const images = [];
+                
+                for (const pageId in pages) {
+                    const page = pages[pageId];
+                    if (page.imageinfo && page.imageinfo[0]) {
+                        const imageInfo = page.imageinfo[0];
+                        images.push({
+                            title: page.title.replace('File:', ''),
+                            url: imageInfo.thumburl,
+                            description: imageInfo.extmetadata?.ImageDescription?.value || 'No description available',
+                            artist: imageInfo.extmetadata?.Artist?.value || 'Unknown',
+                            license: imageInfo.extmetadata?.LicenseShortName?.value || 'Unknown'
+                        });
+                    }
+                }
+                
+                return images;
+                
+            } catch (error) {
+                // Fallback: Generate mock images jika API error
+                console.log('Using mock images due to API error:', error);
+                return generateMockImages(searchQuery, limit);
+            }
+        }
+
+        // Generate mock images untuk demo
+        function generateMockImages(query, count) {
+            const mockImages = [];
+            const sizes = ['300/200', '400/300', '500/400', '600/450'];
+            const categories = {
+                'nature': ['Pemandangan alam', 'Hutan', 'Gunung', 'Sungai', 'Laut', 'Satwa liar'],
+                'technology': ['Teknologi modern', 'Komputer', 'Robot', AI', 'Smartphone', 'Inovasi'],
+                'history': ['Sejarah kuno', 'Arsitektur', 'Monumen', 'Artifak', 'Peradaban'],
+                'art': ['Lukisan indah', 'Patung seni', 'Karya museum', 'Seniman terkenal'],
+                'science': ['Penelitian sains', 'Laboratorium', 'Astronomi', 'Biologi', 'Kimia']
+            };
+            
+            for (let i = 1; i <= count; i++) {
+                const size = sizes[Math.floor(Math.random() * sizes.length)];
+                const category = Object.keys(categories).find(cat => query.includes(cat)) || 'nature';
+                const descriptions = categories[category] || categories.nature;
+                const description = descriptions[Math.floor(Math.random() * descriptions.length)];
+                
+                mockImages.push({
+                    title: `${description} ${i}`,
+                    url: `https://picsum.photos/${size}?random=${i}`,
+                    description: `Gambar ${description} yang indah dari koleksi Wikipedia.`,
+                    artist: 'Wikimedia Contributor',
+                    license: 'CC BY-SA'
+                });
+            }
+            
+            return mockImages;
+        }
+
+        // Display gambar di gallery
+        function displayImages(images, append = false) {
+            const gallery = document.getElementById('imageGallery');
+            
+            if (!append) {
+                gallery.innerHTML = '';
+            }
+            
+            if (images.length === 0) {
+                gallery.innerHTML = `
+                    <div class="loading">
+                        <p>😞 Tidak ada gambar ditemukan untuk "${currentSearch}"</p>
+                        <p>Coba kata kunci lain seperti: nature, technology, art, history</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            images.forEach(image => {
+                const imageCard = document.createElement('div');
+                imageCard.className = 'image-card';
+                imageCard.innerHTML = `
+                    <img src="${image.url}" alt="${image.title}" loading="lazy">
+                    <div class="image-info">
+                        <div class="image-title">${image.title}</div>
+                        <div class="image-description">${truncateText(image.description, 80)}</div>
+                    </div>
+                `;
+                
+                imageCard.addEventListener('click', () => openModal(image));
+                gallery.appendChild(imageCard);
+            });
+            
+            // Tampilkan load more button jika ada gambar
+            if (images.length >= 20) {
+                document.getElementById('loadMoreButton').style.display = 'block';
+                hasMore = true;
+            } else {
+                document.getElementById('loadMoreButton').style.display = 'none';
+                hasMore = false;
+            }
+        }
+
+        // Update statistics
+        function updateStats(count, searchTerm) {
+            document.getElementById('imageCount').textContent = count;
+            document.getElementById('currentSearch').textContent = 
+                categories[searchTerm] ? searchTerm.charAt(0).toUpperCase() + searchTerm.slice(1) : searchTerm;
+        }
+
+        // Modal functions
+        function openModal(image) {
+            document.getElementById('modalImage').src = image.url.replace('/300/', '/800/');
+            document.getElementById('modalTitle').textContent = image.title;
+            document.getElementById('modalDescription').textContent = image.description;
+            document.getElementById('imageModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+
+        // Close modal ketika klik di luar gambar
+        document.getElementById('imageModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Utility function
+        function truncateText(text, maxLength) {
+            if (text.length <= maxLength) return text;
+            return text.substr(0, maxLength) + '...';
+        }
+
+        // About page
+        function showAbout() {
+            const gallery = document.getElementById('imageGallery');
+            gallery.innerHTML = `
+                <div style="background: white; padding: 40px; border-radius: 10px; box-shadow: var(--box-shadow);">
+                    <h2 style="color: var(--primary-color); margin-bottom: 20px;">📷 Tentang Wikipedia Image Gallery</h2>
+                    <p style="margin-bottom: 15px; line-height: 1.6;">
+                        Galeri gambar ini menampilkan koleksi gambar dari Wikipedia dan Wikimedia Commons. 
+                        Semua gambar tersedia di bawah lisensi Creative Commons dan dapat digunakan secara bebas.
+                    </p>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin: 30px 0;">
+                        <div style="padding: 20px; background: #e3f2fd; border-radius: 8px;">
+                            <h4>🖼️ 100+ Gambar</h4>
+                            <p>Koleksi gambar berkualitas tinggi dari berbagai kategori</p>
+                        </div>
+                        <div style="padding: 20px; background: #e8f5e8; border-radius: 8px;">
+                            <h4>🔍 Pencarian Cerdas</h4>
+                            <p>Temukan gambar berdasarkan kategori atau kata kunci</p>
+                        </div>
+                        <div style="padding: 20px; background: #fff3e0; border-radius: 8px;">
+                            <h4>📱 Responsif</h4>
+                            <p>Tampilan optimal di desktop dan mobile</p>
+                        </div>
+                        <div style="padding: 20px; background: #fce4ec; border-radius: 8px;">
+                            <h4>🎯 Kategori</h4>
+                            <p>Alam, Teknologi, Sejarah, Seni, Sains</p>
+                        </div>
+                    </div>
+                    <p><strong>🔥 Fitur:</strong></p>
+                    <ul style="line-height: 1.8;">
+                        <li>Gallery grid yang responsive</li>
+                        <li>Modal view untuk gambar besar</li>
+                        <li>Load more button untuk gambar tambahan</li>
+                        <li>Pencarian real-time</li>
+                        <li>Kategori gambar yang dikurasi</li>
+                    </ul>
+                </div>
+            `;
+            document.getElementById('galleryStats').style.display = 'none';
+            document.getElementById('loadMoreButton').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
